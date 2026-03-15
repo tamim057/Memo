@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Anowara Library POS</title>
+
+<style>
+
+body{
+font-family:Arial;
+background:#eef1f5;
+padding:30px;
+}
+
+.container{
+background:white;
+padding:25px;
+border-radius:12px;
+max-width:1000px;
+margin:auto;
+box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+h1{
+text-align:center;
+color:#333;
+}
+
+.controls{
+display:flex;
+flex-wrap:wrap;
+gap:10px;
+justify-content:center;
+margin-bottom:20px;
+}
+
+select,input{
+padding:10px;
+border-radius:6px;
+border:1px solid #ccc;
+}
+
+button{
+padding:10px 18px;
+border:none;
+border-radius:6px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.addbtn{
+background:#2c7be5;
+color:white;
+}
+
+.printbtn{
+background:#28a745;
+color:white;
+}
+
+.deletebtn{
+background:#dc3545;
+color:white;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th{
+background:#2c7be5;
+color:white;
+}
+
+th,td{
+padding:10px;
+border:1px solid #ddd;
+text-align:center;
+}
+
+.total{
+text-align:right;
+font-size:22px;
+font-weight:bold;
+margin-top:15px;
+}
+
+.receipt{
+text-align:center;
+font-size:24px;
+font-weight:bold;
+margin-bottom:10px;
+}
+
+.hidden{
+display:none;
+}
+
+@media print{
+
+body *{
+visibility:hidden;
+}
+
+#printArea, #printArea *{
+visibility:visible;
+}
+
+#printArea{
+position:absolute;
+left:0;
+top:0;
+width:100%;
+}
+
+.controls{
+display:none;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Anowara Library POS</h1>
+
+<div class="controls">
+
+<select id="itemType" onchange="toggleBookFields()">
+<option value="Book">Book</option>
+<option value="Accessories">Accessories</option>
+</select>
+
+<select id="company">
+<option>Lecture</option>
+<option>Panjeri</option>
+<option>Onupom</option>
+<option>Madrasa</option>
+</select>
+
+<select id="class">
+<option>Class 2</option>
+<option>Class 3</option>
+<option>Class 4</option>
+<option>Class 5</option>
+<option>Class 6</option>
+<option>Class 7</option>
+<option>Class 8</option>
+<option>Class 9</option>
+<option>Class 10</option>
+</select>
+
+<select id="item">
+<option>Book</option>
+<option>Note Book</option>
+<option>Calculator</option>
+<option>Pen</option>
+<option>Pencil</option>
+<option>Eraser</option>
+<option>Highlighter</option>
+<option>Pencil Cutter</option>
+<option>Ruler</option>
+<option>Sticky Note</option>
+<option>Anti Cutter</option>
+</select>
+
+<input type="number" id="qty" placeholder="Qty">
+
+<input type="number" id="price" placeholder="Price">
+
+<button class="addbtn" onclick="addItem()">Add</button>
+
+<button class="printbtn" onclick="window.print()">Print</button>
+
+</div>
+
+<div id="printArea">
+
+<div class="receipt">Anowara Library</div>
+
+<table id="billTable">
+
+<tr>
+<th>Company</th>
+<th>Class</th>
+<th>Item</th>
+<th>Qty</th>
+<th>Price</th>
+<th>Total</th>
+<th>Action</th>
+</tr>
+
+</table>
+
+<div class="total">
+Grand Total : <span id="grandTotal">0</span> Tk
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+let grandTotal=0
+
+function toggleBookFields(){
+
+let type=document.getElementById("itemType").value
+let company=document.getElementById("company")
+let className=document.getElementById("class")
+
+if(type==="Accessories"){
+company.style.display="none"
+className.style.display="none"
+}else{
+company.style.display="block"
+className.style.display="block"
+}
+
+}
+
+function addItem(){
+
+let type=document.getElementById("itemType").value
+let company=document.getElementById("company").value
+let className=document.getElementById("class").value
+let item=document.getElementById("item").value
+let qty=parseInt(document.getElementById("qty").value)
+let price=parseFloat(document.getElementById("price").value)
+
+if(!qty || !price){
+alert("Enter quantity and price")
+return
+}
+
+let total=qty*price
+
+let table=document.getElementById("billTable")
+
+let row=table.insertRow()
+
+if(type==="Book"){
+row.insertCell(0).innerHTML=company
+row.insertCell(1).innerHTML=className
+}else{
+row.insertCell(0).innerHTML="-"
+row.insertCell(1).innerHTML="-"
+}
+
+row.insertCell(2).innerHTML=item
+row.insertCell(3).innerHTML=qty
+row.insertCell(4).innerHTML=price
+row.insertCell(5).innerHTML=total
+
+let btn=document.createElement("button")
+btn.innerText="Remove"
+btn.className="deletebtn"
+
+btn.onclick=function(){
+
+grandTotal-=total
+document.getElementById("grandTotal").innerText=grandTotal
+row.remove()
+
+}
+
+row.insertCell(6).appendChild(btn)
+
+grandTotal+=total
+
+document.getElementById("grandTotal").innerText=grandTotal
+
+document.getElementById("qty").value=""
+document.getElementById("price").value=""
+
+}
+
+</script>
+
+</body>
+</html>
